@@ -1,0 +1,302 @@
+{
+  "info": {
+    "_postman_id": "93859d84-2294-4f72-b5a3-ea35054496bd",
+    "name": "COMP3133 Assignment 1 - GraphQL API",
+    "description": "GraphQL requests for Signup/Login and Employee CRUD + search. Set baseUrl (default http://localhost:4000) and token (Bearer JWT) in your Postman environment.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "37131742",
+    "_collection_link": "https://go.postman.co/collection/37131742-93859d84-2294-4f72-b5a3-ea35054496bd?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Signup",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"mutation Signup($input: SignupInput!) {\\n  signup(input: $input) {\\n    success\\n    message\\n    token\\n    user { _id username email }\\n  }\\n}\",\n  \"variables\": {\n    \"input\": {\n      \"username\": \"oleg_demo\",\n      \"email\": \"oleg_demo@example.com\",\n      \"password\": \"Password123\"\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/graphql",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "graphql"
+              ]
+            },
+            "description": "Create a user account. You can change variables.input values."
+          },
+          "response": []
+        },
+        {
+          "name": "Login (get token)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"query Login($input: LoginInput!) {\\n  login(input: $input) {\\n    success\\n    message\\n    token\\n  }\\n}\",\n  \"variables\": {\n    \"input\": {\n      \"usernameOrEmail\": \"oleg1atest.com\",\n      \"password\": \"Password123\"\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/graphql",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "graphql"
+              ]
+            },
+            "description": "Run this first. Copy the returned token into your environment variable `token` (WITHOUT the word 'Bearer')."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Employees",
+      "item": [
+        {
+          "name": "Get all employees",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"query {\\n  getAllEmployees {\\n    success\\n    message\\n    employees {\\n      _id\\n      first_name\\n      last_name\\n      email\\n      gender\\n      designation\\n      salary\\n      date_of_joining\\n      department\\n      employee_photo\\n      created_at\\n      updated_at\\n    }\\n  }\\n}\",\n  \"variables\": {}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/graphql",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "graphql"
+              ]
+            },
+            "description": "Requires Authorization header: Bearer {{token}}"
+          },
+          "response": []
+        },
+        {
+          "name": "Add employee (Cloudinary upload from URL)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"mutation AddEmployee($input: EmployeeInput!) {\\n  addEmployee(input: $input) {\\n    success\\n    message\\n    employee {\\n      _id\\n      first_name\\n      last_name\\n      department\\n      designation\\n      employee_photo\\n    }\\n  }\\n}\",\n  \"variables\": {\n    \"input\": {\n      \"first_name\": \"John\",\n      \"last_name\": \"Doe\",\n      \"email\": \"john.doe1@company.com\",\n      \"gender\": \"Male\",\n      \"designation\": \"Developer\",\n      \"salary\": 3500,\n      \"date_of_joining\": \"2024-01-15T00:00:00.000Z\",\n      \"department\": \"IT\",\n      \"employee_photo\": \"https://picsum.photos/seed/emp1/400\"\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/graphql",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "graphql"
+              ]
+            },
+            "description": "employee_photo can be a public image URL; server will upload it to Cloudinary and store the Cloudinary URL."
+          },
+          "response": []
+        },
+        {
+          "name": "Search employee by eid",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"query SearchByEid($eid: ID!) {\\n  searchEmployeeByEid(eid: $eid) {\\n    success\\n    message\\n    employee {\\n      _id\\n      first_name\\n      last_name\\n      email\\n      gender\\n      designation\\n      salary\\n      date_of_joining\\n      department\\n      employee_photo\\n    }\\n  }\\n}\",\n  \"variables\": {\n    \"eid\": \"PUT_EMPLOYEE_ID_HERE\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/graphql",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "graphql"
+              ]
+            },
+            "description": "Replace variables.eid with an existing employee _id."
+          },
+          "response": []
+        },
+        {
+          "name": "Update employee by eid",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"mutation UpdateByEid($eid: ID!, $input: EmployeeUpdateInput!) {\\n  updateEmployeeByEid(eid: $eid, input: $input) {\\n    success\\n    message\\n    employee {\\n      _id\\n      first_name\\n      last_name\\n      salary\\n      designation\\n      department\\n      employee_photo\\n    }\\n  }\\n}\",\n  \"variables\": {\n    \"eid\": \"PUT_EMPLOYEE_ID_HERE\",\n    \"input\": {\n      \"salary\": 5000\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/graphql",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "graphql"
+              ]
+            },
+            "description": "Replace variables.eid. Update fields inside variables.input as needed."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete employee by eid",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"mutation DeleteByEid($eid: ID!) {\\n  deleteEmployeeByEid(eid: $eid) {\\n    success\\n    message\\n  }\\n}\",\n  \"variables\": {\n    \"eid\": \"PUT_EMPLOYEE_ID_HERE\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/graphql",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "graphql"
+              ]
+            },
+            "description": "Replace variables.eid with the employee _id to delete."
+          },
+          "response": []
+        },
+        {
+          "name": "Search employees by designation or department",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"query SearchByDesignationOrDepartment($designation: String, $department: String) {\\n  searchEmployeesByDesignationOrDepartment(designation: $designation, department: $department) {\\n    success\\n    message\\n    employees {\\n      _id\\n      first_name\\n      last_name\\n      designation\\n      department\\n      employee_photo\\n    }\\n  }\\n}\",\n  \"variables\": {\n    \"designation\": \"Developer\",\n    \"department\": null\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/graphql",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "graphql"
+              ]
+            },
+            "description": "Provide either designation or department (or both)."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
