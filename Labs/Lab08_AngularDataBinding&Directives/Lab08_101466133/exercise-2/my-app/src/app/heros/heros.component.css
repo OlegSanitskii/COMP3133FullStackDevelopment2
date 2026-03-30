@@ -1,0 +1,8 @@
+.heroes li {
+  cursor: pointer;
+  margin-bottom: 6px;
+}
+
+.heroes li:hover {
+  color: blue;
+}

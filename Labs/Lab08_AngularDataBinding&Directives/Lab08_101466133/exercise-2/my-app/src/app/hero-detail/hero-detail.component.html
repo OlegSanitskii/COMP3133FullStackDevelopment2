@@ -1,0 +1,13 @@
+<div *ngIf="hero">
+  <h2>{{ hero.name | removeSpaces }} Details</h2>
+  <div><strong>id:</strong> {{ hero.id }}</div>
+  <div>
+    <label><strong>name:</strong></label>
+    <input [(ngModel)]="hero.name" placeholder="name">
+  </div>
+
+  <hr>
+
+  <h3>Input Format Directive Demo</h3>
+  <input type="text" appInputFormat placeholder="Type something and click away">
+</div>
